@@ -1,0 +1,4 @@
+{
+    "enable_websocket": true,
+    "enable_jwt": true
+}
