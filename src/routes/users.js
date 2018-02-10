@@ -1,12 +1,12 @@
-const router = require('koa-router')({
-	prefix: '/users'
-})
 import ecc from '../ecc'
 import jwt from 'jsonwebtoken'
 import auth from './auth'
 import { User } from '../models/db'
 import ErrCode from '../models/err_msg'
 import jwtConfig from '../config/jwt_config'
+const router = require('koa-router')({
+	prefix: '/users'
+})
 
 router.post('/register', async (ctx, next) => {
 	let mobile = ctx.request.body.mobile
