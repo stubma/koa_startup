@@ -1,4 +1,13 @@
 {
+    "db_name": "test",
     "enable_websocket": true,
-    "enable_jwt": true
+    "enable_jwt": true,
+
+    "sms_provider": "leancloud",
+    "leancloud_id": "qQCEvHbgOI1qToSbuyPfJ8Kb-gzGzoHsz",
+    "leancloud_key": "Iqexvd53yThMLvgehDEvgYJz",
+    "leancloud_templates": {
+        "en": "login_en",
+        "zh": "login_cn"
+    }
 }

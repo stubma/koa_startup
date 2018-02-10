@@ -2,14 +2,13 @@
 
 'use strict'
 
-const Koa = require('koa')
-const app = new Koa()
 import json from 'koa-json'
 import onerror from 'koa-onerror'
 import bodyparser from 'koa-bodyparser'
 import logger from 'koa-logger'
 import auth from './routes/auth'
 import users from './routes/users'
+import validator from './routes/validator'
 import LogUtil from './utils/log_util'
 import enforceHttps from 'koa-sslify'
 import http from 'http'
@@ -18,6 +17,10 @@ import fs from 'fs'
 import logConfig from './config/log_config'
 import KoaWebSocketServer from './ws/koa_ws'
 import serverConfig from './config/server_config'
+
+// create koa
+const Koa = require('koa')
+const app = new Koa()
 
 /**
  * Normalize a port into a number, string, or false.
@@ -85,6 +88,7 @@ app.use(async (ctx, next) => {
 
 // routes
 app.use(auth.checkToken())
+app.use(validator.validateRequestParams())
 app.use(users.routes(), users.allowedMethods())
 
 // error-handling
@@ -108,6 +112,7 @@ let server = null
 if(serverConfig.enable_websocket) {
 	server = new KoaWebSocketServer(app)
 	server.use(auth.checkToken())
+	server.use(validator.validateRequestParams())
 	server.use(users.routes())
 } else {
 	server = http.createServer(app.callback())
