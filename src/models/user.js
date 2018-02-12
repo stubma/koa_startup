@@ -18,6 +18,6 @@ let UserSchema = new mongoose.Schema({
 }, {
 	collection: 'users',
 	versionKey: false
-});
+})
 
 export default UserSchema

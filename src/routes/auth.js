@@ -1,9 +1,9 @@
 'use strict'
 
 import ecc from '../ecc'
-import {ExtractJwt} from 'passport-jwt'
+import { ExtractJwt } from 'passport-jwt'
 import jwt from 'jsonwebtoken'
-import ErrCode from '../models/err_msg'
+import { ErrCode } from '../models'
 import jwtConfig from '../config/jwt_config'
 import serverConfig from '../config/server_config'
 import _ from 'lodash'

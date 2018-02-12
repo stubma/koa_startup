@@ -1,9 +1,8 @@
 'use strict'
 
-import { User } from '../models/db'
+import { User, ErrCode } from '../models'
 const fetch = require('node-fetch')
 const assert = require('assert')
-import ErrCode from '../models/err_msg'
 
 describe('User API', () => {
 	// jwt token

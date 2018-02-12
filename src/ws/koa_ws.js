@@ -4,7 +4,7 @@ import http from 'http'
 const debug = require('debug')('koa:websocketserver')
 const co = require('co')
 import compose from 'koa-compose'
-import ErrCode from '../models/err_msg'
+import { ErrCode } from '../models'
 
 class KoaWebSocketServer {
 	constructor(app) {

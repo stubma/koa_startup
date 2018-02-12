@@ -18,6 +18,9 @@ const zh_CN = {
 
 	// common
 	unknown_error: '未知错误',
-	sms_provider_not_supported: '不支持的短信服务提供商'
+	sms_provider_not_supported: '不支持的短信服务提供商',
+
+	// twilio
+	twilio_tpl_register: '欢迎注册Koa Startup, 您的验证码: %s'
 };
 export default zh_CN;

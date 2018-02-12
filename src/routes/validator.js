@@ -1,7 +1,7 @@
 'use strict'
 
 import _ from 'lodash'
-import ErrCode from '../models/err_msg'
+import { ErrCode } from '../models'
 
 /*
  key is url, value is schema should in following format

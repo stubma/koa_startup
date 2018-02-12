@@ -3,11 +3,18 @@
     "enable_websocket": true,
     "enable_jwt": true,
 
-    "sms_provider": "leancloud",
+    "__comment__": "sms_provider can be twilio/leancloud",
+    "sms_provider": "twilio",
+
+    "twilio_account_sid": "AC01d19cc7e4762da7a0a8361cdab9c26a",
+    "twilio_auth_token": "ea6eba8da2643f1df7b2792fc5e890a3",
+    "twilio_sender": "+18087252386",
+    "twilio_code_length": 6,
+
     "leancloud_id": "qQCEvHbgOI1qToSbuyPfJ8Kb-gzGzoHsz",
     "leancloud_key": "Iqexvd53yThMLvgehDEvgYJz",
     "leancloud_templates": {
-        "en": "login_en",
-        "zh": "login_cn"
+        "en": "leancloud_tpl_en",
+        "zh": "leancloud_tpl_zh"
     }
 }

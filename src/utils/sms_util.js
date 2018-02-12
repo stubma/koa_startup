@@ -2,6 +2,7 @@
 
 import serverConfig from '../config/server_config'
 import leancloud from './leancloud_provider'
+import twilio from './twilio_provider'
 import L from '../i18n'
 
 /**
@@ -13,6 +14,8 @@ import L from '../i18n'
 async function requestSmsCode(mobile, lang) {
 	if(serverConfig.sms_provider == 'leancloud') {
 		return await leancloud.requestSmsCode(mobile, lang)
+	} else if(serverConfig.sms_provider == 'twilio') {
+		return await twilio.requestSmsCode(mobile, lang)
 	} else {
 		return L(lang, 'sms_provider_not_supported')
 	}
@@ -28,12 +31,28 @@ async function requestSmsCode(mobile, lang) {
 async function verifySmsCode(mobile, sms, lang) {
 	if(serverConfig.sms_provider == 'leancloud') {
 		return await leancloud.verifySmsCode(mobile, sms, lang)
+	} else if(serverConfig.sms_provider == 'twilio') {
+		return await twilio.verifySmsCode(mobile, sms, lang)
 	} else {
 		return L(lang, 'sms_provider_not_supported')
 	}
 }
 
+/**
+ * generate sms code by yourself
+ * @param length sms code length
+ * @return {string} sms code string
+ */
+function generateSmsCode(length) {
+	let code = ''
+	while(length-- > 0) {
+		code += String.fromCharCode(0x30 + Math.floor(Math.random() * 10))
+	}
+	return code
+}
+
 export default {
 	requestSmsCode,
-	verifySmsCode
+	verifySmsCode,
+	generateSmsCode
 }

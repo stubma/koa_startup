@@ -18,6 +18,9 @@ const en_US = {
 
 	// common
 	unknown_error: 'Unknown Error',
-	sms_provider_not_supported: 'Sms service provider not supported'
+	sms_provider_not_supported: 'Sms service provider not supported',
+
+	// twilio
+	twilio_tpl_register: 'Welcome to Koa Startup, your register code: %s'
 };
 export default en_US;
