@@ -60,7 +60,17 @@ function initLogPath() {
 initLogPath()
 
 // error handler
-onerror(app)
+onerror(app, {
+	accepts: function() {
+		return 'json'
+	},
+	json: function(err) {
+		this.body = {
+			err_code: err.status,
+			err_msg: http.STATUS_CODES[err.status]
+		}
+	}
+})
 
 // Force HTTPS on all page
 // app.use(enforceHttps())
