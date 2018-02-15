@@ -109,8 +109,8 @@ app.on('error', (err, ctx) => {
 
 // SSL options
 // var options = {
-// 	key: fs.readFileSync('./ssl/server.key'),  //ssl文件路径
-// 	cert: fs.readFileSync('./ssl/server.pem')  //ssl文件路径
+// 	key: fs.readFileSync('./ssl/server.key'), 
+// 	cert: fs.readFileSync('./ssl/server.pem')
 // };
 
 // Get port from environment and store in Express.
