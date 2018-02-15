@@ -16,7 +16,7 @@ let UserSchema = new mongoose.Schema({
 		type: String
 	}
 }, {
-	collection: 'users',
+	collection: 'user',
 	versionKey: false
 })
 

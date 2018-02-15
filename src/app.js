@@ -109,7 +109,7 @@ app.on('error', (err, ctx) => {
 
 // SSL options
 // var options = {
-// 	key: fs.readFileSync('./ssl/server.key'), 
+// 	key: fs.readFileSync('./ssl/server.key'),
 // 	cert: fs.readFileSync('./ssl/server.pem')
 // };
 
