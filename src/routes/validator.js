@@ -63,7 +63,23 @@ function validateRequestParams() {
 	}
 }
 
+/**
+ * validator which ensures value is a positive number
+ */
+function positiveNumberValidator(value) {
+	return _.isNumber(value) && value > 0
+}
+
+/**
+ * validator which ensures value is a non-empty string
+ */
+function nonEmptyStringValidator(value) {
+	return _.isString(value) && value.length > 0
+}
+
 export default {
 	registerParamSchema,
-	validateRequestParams
+	validateRequestParams,
+	positiveNumberValidator,
+	nonEmptyStringValidator
 }

@@ -28,13 +28,13 @@ jwtFreeUrls.map(url => {
 // common parameters
 const commonParams = {
 	mobile: {
-		isValid: _.isString
+		isValid: validator.nonEmptyStringValidator
 	},
 	nation_code: {
-		isValid: _.isString
+		isValid: validator.nonEmptyStringValidator
 	},
 	lang: {
-		isValid: _.isString,
+		isValid: validator.nonEmptyStringValidator,
 		optional: true
 	}
 }
@@ -42,22 +42,22 @@ const commonParams = {
 // register request schemas
 validator.registerParamSchema(`${prefix}/register_pwd`, Object.assign({}, commonParams, {
 	password: {
-		isValid: _.isString
+		isValid: validator.nonEmptyStringValidator
 	}
 }))
 validator.registerParamSchema(`${prefix}/register_sms`, Object.assign({}, commonParams, {
 	sms: {
-		isValid: _.isString
+		isValid: validator.nonEmptyStringValidator
 	}
 }))
 validator.registerParamSchema(`${prefix}/login_pwd`, Object.assign({}, commonParams, {
 	password: {
-		isValid: _.isString
+		isValid: validator.nonEmptyStringValidator
 	}
 }))
 validator.registerParamSchema(`${prefix}/login_sms`, Object.assign({}, commonParams, {
 	sms: {
-		isValid: _.isString
+		isValid: validator.nonEmptyStringValidator
 	}
 }))
 validator.registerParamSchema(`${prefix}/login_jwt`, commonParams)
