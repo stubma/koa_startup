@@ -57,6 +57,7 @@ class KoaWebSocketServer {
 					socket: ws.request.connection,
 					headers: j._headers
 				}, res)
+				let url = j._url
 				delete j._url
 				delete j._method
 				delete j._headers
@@ -64,13 +65,17 @@ class KoaWebSocketServer {
 
 				// dispatch
 				fn(ctx).then(function() {
-					// when chain is done, we send reply back
+					// when chain is done, we send reply back, but we need
+					// add _url for client reference
+					ctx.response.body._url = url
 					ws.send(JSON.stringify(ctx.response.body))
 				}).catch(function(err) {
 					debug(err)
 
-					// send a default error reply
-					ws.send(JSON.stringify(ErrCode.build(null, ErrCode.ERR_INTERNAL_SERVER_ERROR)))
+					// send a default error reply, and add url for client reference
+					let reply = ErrCode.build(null, ErrCode.ERR_INTERNAL_SERVER_ERROR)
+					reply._url = url
+					ws.send(JSON.stringify(reply))
 				})
 			})
 		})
