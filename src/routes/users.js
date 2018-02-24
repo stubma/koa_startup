@@ -85,8 +85,8 @@ router.post('/register_pwd', async (ctx, next) => {
 		await user.save()
 
 		// return
-		ctx.response.type = 'application/json'
-		ctx.response.body = { name: user.name }
+		ErrCode.build(ctx, ErrCode.ERR_OK)
+		ctx.response.body.name = user.name
 	}
 })
 
@@ -116,8 +116,8 @@ router.post('/register_sms', async (ctx, next) => {
 			await user.save()
 
 			// return
-			ctx.response.type = 'application/json'
-			ctx.response.body = { name: user.name }
+			ErrCode.build(ctx, ErrCode.ERR_OK)
+			ctx.response.body.name = user.name
 		}
 	}
 })
@@ -135,15 +135,12 @@ router.post('/login_pwd', async (ctx, next) => {
 	if(user) {
 		let pwd = ecc.sha256(password, 'base64')
 		if(pwd == user.password) {
-			ctx.response.type = 'application/json'
-			ctx.response.body = {
-				result: 'ok',
-				token: jwt.sign({
-					mobile: mobile,
-					nation_code: nation_code,
-					timestamp: Date.now()
-				}, auth.getSecret(), jwtConfig)
-			}
+			ErrCode.build(ctx, ErrCode.ERR_OK)
+			ctx.response.body.token = jwt.sign({
+				mobile: mobile,
+				nation_code: nation_code,
+				timestamp: Date.now()
+			}, auth.getSecret(), jwtConfig)
 		} else {
 			ErrCode.build(ctx, ErrCode.ERR_PASSWORD_WRONG)
 		}
@@ -178,16 +175,13 @@ router.post('/login_sms', async (ctx, next) => {
 		}
 
 		// return token
-		ctx.response.type = 'application/json'
-		ctx.response.body = {
-			result: 'ok',
-			name: user.name,
-			token: await jwt.sign({
-				mobile: mobile,
-				nation_code: nation_code,
-				timestamp: Date.now()
-			}, auth.getSecret(), jwtConfig)
-		}
+		ErrCode.build(ctx, ErrCode.ERR_OK)
+		ctx.response.body.name = user.name
+		ctx.response.body.token = await jwt.sign({
+			mobile: mobile,
+			nation_code: nation_code,
+			timestamp: Date.now()
+		}, auth.getSecret(), jwtConfig)
 	}
 })
 
@@ -204,15 +198,12 @@ router.post('/login_jwt', async (ctx, next) => {
 		nation_code: nation_code
 	})
 	if(user) {
-		ctx.response.type = 'application/json'
-		ctx.response.body = {
-			result: 'ok',
-			token: await jwt.sign({
-				mobile: mobile,
-				nation_code: nation_code,
-				timestamp: Date.now()
-			}, auth.getSecret(), jwtConfig)
-		}
+		ErrCode.build(ctx, ErrCode.ERR_OK)
+		ctx.response.body.token = await jwt.sign({
+			mobile: mobile,
+			nation_code: nation_code,
+			timestamp: Date.now()
+		}, auth.getSecret(), jwtConfig)
 	} else {
 		ErrCode.build(ctx, ErrCode.ERR_USER_NOT_EXIST)
 	}
@@ -234,14 +225,12 @@ router.post('/request_sms', async (ctx, next) => {
 	if(errMsg) {
 		ErrCode.build(ctx, ErrCode.ERR_REQUEST_SMS_FAILED, errMsg)
 	} else {
-		ctx.response.type = 'application/json'
-		ctx.response.body = { result: 'ok' }
+		ErrCode.build(ctx, ErrCode.ERR_OK)
 	}
 })
 
 router.post('/test', async (ctx, next) => {
-	ctx.response.type = 'application/json'
-	ctx.response.body = { result: 'access ok!!!' }
+	ErrCode.build(ctx, ErrCode.ERR_OK)
 })
 
 export default router

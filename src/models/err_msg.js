@@ -6,7 +6,7 @@ import util from 'util'
 
 // error code in format [value, string, should format]
 const codes = {
-	ERR_OK: [0, 'OK', false],
+	ERR_OK: [0, 'err_ok', false],
 	ERR_INTERNAL_SERVER_ERROR: [1, 'err_internal_server_error', false],
 	ERR_USER_EXISTS: [2, 'err_user_exists', false],
 	ERR_USER_NOT_EXIST: [3, 'err_user_not_exist', false],

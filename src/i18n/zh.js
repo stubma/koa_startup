@@ -1,5 +1,6 @@
 const zh_CN = {
 	// error messages
+	err_ok: '成功',
 	err_internal_server_error: '服务器内部错误',
 	err_user_exists: '用户已存在',
 	err_user_not_exist: "用户不存在",

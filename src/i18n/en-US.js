@@ -1,5 +1,6 @@
 const en_US = {
 	// error messages
+	err_ok: 'OK',
 	err_internal_server_error: "Internal server error",
 	err_user_exists: 'User already exists',
 	err_user_not_exist: "User does not exist",
