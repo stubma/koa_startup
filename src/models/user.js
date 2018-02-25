@@ -6,7 +6,7 @@ let UserSchema = new mongoose.Schema({
 	name: {
 		type: String
 	},
-	nation_code: {
+	nationCode: {
 		type: String
 	},
 	mobile: {

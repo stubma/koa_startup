@@ -37,7 +37,7 @@ describe('User API', () => {
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({
 				mobile: 4455,
-				nation_code: "+86",
+				nationCode: "+86",
 				lang: "zh-CN",
 				password: "my-password"
 			})
@@ -59,7 +59,7 @@ describe('User API', () => {
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({
 				mobile: "13344556677",
-				nation_code: "+86",
+				nationCode: "+86",
 				lang: "zh-CN",
 				password: "my-password"
 			})
@@ -79,7 +79,7 @@ describe('User API', () => {
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({
 				mobile: "13344556677",
-				nation_code: "+86",
+				nationCode: "+86",
 				lang: "zh-CN",
 				password: "my-password"
 			})
@@ -101,7 +101,7 @@ describe('User API', () => {
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({
 				mobile: "13344556677",
-				nation_code: "+86",
+				nationCode: "+86",
 				lang: "zh-CN",
 				password: "my-password"
 			})
@@ -127,7 +127,7 @@ describe('User API', () => {
 			},
 			body: JSON.stringify({
 				mobile: "13344556677",
-				nation_code: "+86",
+				nationCode: "+86",
 				lang: "zh-CN"
 			})
 		}).then(async resp => {

@@ -12,7 +12,7 @@ ws.on('open', function open() {
 			'authorization': 'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtb2JpbGUiOiIxMzM0NDU1NjY3NyIsInBhc3N3b3JkIjoid1orb0FIZUZVQjU5SDB0Vnd5bWsyZVBHYUFiRnYyckpJUEdFZDJ0cllwQT0iLCJpYXQiOjE1MTc5ODg2MTcsImV4cCI6MTUxODE2MTQxNywiaXNzIjoieHh4Iiwic3ViIjoieHh4In0.Yi_cbpbzV4NiRdq1YsPidt2DnmA2Fj01iyapKerVXlo'
 		},
 		mobile: "13344556677",
-		nation_code: "+86",
+		nationCode: "+86",
 		lang: "zh-CN",
 		password: "my-passwddord"
 	}))

@@ -30,7 +30,7 @@ const commonParams = {
 	mobile: {
 		isValid: validator.nonEmptyStringValidator
 	},
-	nation_code: {
+	nationCode: {
 		isValid: validator.nonEmptyStringValidator
 	},
 	lang: {
@@ -67,10 +67,10 @@ validator.registerParamSchema(`${prefix}/request_sms`, commonParams)
  register a user by mobile and password
  */
 router.post('/register_pwd', async (ctx, next) => {
-	let { mobile, nation_code, password } = ctx.request.body
+	let { mobile, nationCode, password } = ctx.request.body
 	let user = await User.findOne({
 		mobile: mobile,
-		nation_code: nation_code
+		nationCode: nationCode
 	})
 	if(user) {
 		ErrCode.build(ctx, ErrCode.ERR_USER_EXISTS)
@@ -78,7 +78,7 @@ router.post('/register_pwd', async (ctx, next) => {
 		// create new user
 		user = new User({
 			name: mobile,
-			nation_code: nation_code,
+			nationCode: nationCode,
 			mobile: mobile,
 			password: ecc.sha256(password, 'base64')
 		})
@@ -94,23 +94,23 @@ router.post('/register_pwd', async (ctx, next) => {
  register a user by mobile and sms verify code
  */
 router.post('/register_sms', async (ctx, next) => {
-	let { mobile, nation_code, sms } = ctx.request.body
+	let { mobile, nationCode, sms } = ctx.request.body
 	let user = await User.findOne({
 		mobile: mobile,
-		nation_code: nation_code
+		nationCode: nationCode
 	})
 	if(user) {
 		ErrCode.build(ctx, ErrCode.ERR_USER_EXISTS)
 	} else {
 		// verify sms, if return null, means ok
-		let errMsg = await smsUtil.verifySmsCode(nation_code + mobile, sms)
+		let errMsg = await smsUtil.verifySmsCode(nationCode + mobile, sms)
 		if(errMsg) {
 			ErrCode.build(ctx, ErrCode.ERR_VERIFY_SMS_FAILED, errMsg)
 		} else {
 			// create new user
 			user = new User({
 				name: mobile,
-				nation_code: nation_code,
+				nationCode: nationCode,
 				mobile: mobile
 			})
 			await user.save()
@@ -127,10 +127,10 @@ router.post('/register_sms', async (ctx, next) => {
  jsonwebtoken uses seconds and it will be the same when requests come fast
  */
 router.post('/login_pwd', async (ctx, next) => {
-	let { mobile, nation_code, password } = ctx.request.body
+	let { mobile, nationCode, password } = ctx.request.body
 	let user = await User.findOne({
 		mobile: mobile,
-		nation_code: nation_code
+		nationCode: nationCode
 	})
 	if(user) {
 		let pwd = ecc.sha256(password, 'base64')
@@ -138,7 +138,7 @@ router.post('/login_pwd', async (ctx, next) => {
 			ErrCode.build(ctx, ErrCode.ERR_OK)
 			ctx.response.body.token = jwt.sign({
 				mobile: mobile,
-				nation_code: nation_code,
+				nationCode: nationCode,
 				timestamp: Date.now()
 			}, auth.getSecret(), jwtConfig)
 		} else {
@@ -153,22 +153,22 @@ router.post('/login_pwd', async (ctx, next) => {
  login by sms, if user doesn't exist, will create a new user
  */
 router.post('/login_sms', async (ctx, next) => {
-	let { mobile, nation_code, sms } = ctx.request.body
+	let { mobile, nationCode, sms } = ctx.request.body
 
 	// verify sms, if return null, means ok
-	let errMsg = await smsUtil.verifySmsCode(nation_code + mobile, sms)
+	let errMsg = await smsUtil.verifySmsCode(nationCode + mobile, sms)
 	if(errMsg) {
 		ErrCode.build(ctx, ErrCode.ERR_VERIFY_SMS_FAILED, errMsg)
 	} else {
 		// create new user if no user here
 		let user = await User.findOne({
 			mobile: mobile,
-			nation_code: nation_code
+			nationCode: nationCode
 		})
 		if(!user) {
 			user = new User({
 				name: mobile,
-				nation_code: nation_code,
+				nationCode: nationCode,
 				mobile: mobile
 			})
 			await user.save()
@@ -179,7 +179,7 @@ router.post('/login_sms', async (ctx, next) => {
 		ctx.response.body.name = user.name
 		ctx.response.body.token = await jwt.sign({
 			mobile: mobile,
-			nation_code: nation_code,
+			nationCode: nationCode,
 			timestamp: Date.now()
 		}, auth.getSecret(), jwtConfig)
 	}
@@ -192,16 +192,16 @@ router.post('/login_sms', async (ctx, next) => {
  will verify token before
  */
 router.post('/login_jwt', async (ctx, next) => {
-	let { mobile, nation_code } = ctx.request.body
+	let { mobile, nationCode } = ctx.request.body
 	let user = await User.findOne({
 		mobile: mobile,
-		nation_code: nation_code
+		nationCode: nationCode
 	})
 	if(user) {
 		ErrCode.build(ctx, ErrCode.ERR_OK)
 		ctx.response.body.token = await jwt.sign({
 			mobile: mobile,
-			nation_code: nation_code,
+			nationCode: nationCode,
 			timestamp: Date.now()
 		}, auth.getSecret(), jwtConfig)
 	} else {
@@ -214,14 +214,14 @@ router.post('/login_jwt', async (ctx, next) => {
  */
 router.post('/request_sms', async (ctx, next) => {
 	// get language
-	let { mobile, nation_code } = ctx.request.body
+	let { mobile, nationCode } = ctx.request.body
 	let lang = ctx.request.body.lang
 	if(!lang) {
 		lang = 'en'
 	}
 
 	// request
-	let errMsg = await smsUtil.requestSmsCode(nation_code + mobile, lang)
+	let errMsg = await smsUtil.requestSmsCode(nationCode + mobile, lang)
 	if(errMsg) {
 		ErrCode.build(ctx, ErrCode.ERR_REQUEST_SMS_FAILED, errMsg)
 	} else {
