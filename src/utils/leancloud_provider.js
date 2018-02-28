@@ -11,6 +11,16 @@ import L from '../i18n'
  * @return null if ok, error message if failed
  */
 async function requestSmsCode(mobile, lang) {
+	// for using leancloud template, you should have 200 rmb balance in your account
+	// so we set a flag to control use template or not. If you have enough balance,
+	// set flag to true and update your template name in server config
+	let body = {
+		mobilePhoneNumber: mobile
+	}
+	if(serverConfig.leancloud_use_template) {
+		body.app_name = L(lang, 'app_name')
+		body.template = lang.startsWith('zh') ? serverConfig.leancloud_templates.zh : serverConfig.leancloud_templates.en
+	}
 	let errMsg = await fetch('https://gwh6r3kd.api.lncld.net/1.1/requestSmsCode', {
 		method: 'POST',
 		headers: {
@@ -18,11 +28,7 @@ async function requestSmsCode(mobile, lang) {
 			'X-LC-Key': serverConfig.leancloud_key,
 			'Content-Type': 'application/json'
 		},
-		body: JSON.stringify({
-			mobilePhoneNumber: mobile,
-			app_name: L(lang, 'app_name'),
-			template: lang.startsWith('zh') ? serverConfig.leancloud_templates.zh : serverConfig.leancloud_templates.en
-		})
+		body: JSON.stringify(body)
 	}).then(async resp => {
 		if(resp.ok && resp.status < 300) {
 			await resp.json().then(j => {

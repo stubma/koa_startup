@@ -14,6 +14,7 @@
 
     "leancloud_id": "qQCEvHbgOI1qToSbuyPfJ8Kb-gzGzoHsz",
     "leancloud_key": "Iqexvd53yThMLvgehDEvgYJz",
+    "leancloud_use_template": false,
     "leancloud_templates": {
         "en": "leancloud_tpl_en",
         "zh": "leancloud_tpl_zh"
