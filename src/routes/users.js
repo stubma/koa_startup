@@ -215,10 +215,7 @@ router.post('/login_jwt', async (ctx, next) => {
 router.post('/request_sms', async (ctx, next) => {
 	// get language
 	let { mobile, nationCode } = ctx.request.body
-	let lang = ctx.request.body.lang
-	if(!lang) {
-		lang = 'en'
-	}
+	let lang = ctx.request.body.lang || 'en'
 
 	// request
 	let errMsg = await smsUtil.requestSmsCode(nationCode, mobile, lang)
