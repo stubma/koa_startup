@@ -4,7 +4,7 @@
     "enable_jwt": true,
     "enable_cors": true,
 
-    "__comment__": "sms_provider can be twilio/leancloud",
+    "__comment__": "sms_provider can be twilio/leancloud/sms.cn",
     "sms_provider": "twilio",
 
     "twilio_account_sid": "AC01d19cc7e4762da7a0a8361cdab9c26a",
@@ -18,5 +18,23 @@
     "leancloud_templates": {
         "en": "leancloud_tpl_en",
         "zh": "leancloud_tpl_zh"
-    }
+    },
+
+    "sms_cn_uid": "xxx",
+    "sms_cn_api_pwd": "xxx",
+    "sms_cn_code_length": 6,
+    "sms_cn_templates": {
+        "en": {
+            "sign_up": 111111,
+            "sign_in": 111111,
+            "reset_pwd": 111111
+        },
+        "zh": {
+            "sign_up": 111111,
+            "sign_in": 111111,
+            "reset_pwd": 111111
+        }
+    },
+    "sms_cn_code_param_name": "code",
+    "sms_cn_app_param_name": "product"
 }

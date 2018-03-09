@@ -6,16 +6,18 @@ import L from '../i18n'
 
 /**
  * request a sms code for a mobile
+ * @param nationCode nation code
  * @param mobile mobile number string
  * @param lang language code
+ * @param extra for some provider they may need extra parameters
  * @return null if ok, error message if failed
  */
-async function requestSmsCode(mobile, lang) {
+async function requestSmsCode(nationCode, mobile, lang, extra) {
 	// for using leancloud template, you should have 200 rmb balance in your account
 	// so we set a flag to control use template or not. If you have enough balance,
 	// set flag to true and update your template name in server config
 	let body = {
-		mobilePhoneNumber: mobile
+		mobilePhoneNumber: `${nationCode}${mobile}`
 	}
 	if(serverConfig.leancloud_use_template) {
 		body.app_name = L(lang, 'app_name')
@@ -47,7 +49,7 @@ async function requestSmsCode(mobile, lang) {
 	return errMsg
 }
 
-async function verifySmsCode(mobile, sms, lang) {
+async function verifySmsCode(nationCode, mobile, sms, lang) {
 	let errMsg = await fetch(`https://gwh6r3kd.api.lncld.net/1.1/verifySmsCode/${sms}`, {
 		method: 'POST',
 		headers: {
@@ -56,7 +58,7 @@ async function verifySmsCode(mobile, sms, lang) {
 			'Content-Type': 'application/json'
 		},
 		body: JSON.stringify({
-			mobilePhoneNumber: mobile
+			mobilePhoneNumber: `${nationCode}${mobile}`
 		})
 	}).then(async resp => {
 		if(resp.ok && resp.status < 300) {

@@ -12,26 +12,29 @@ const client = require('twilio')(serverConfig.twilio_account_sid, serverConfig.t
 
 /**
  * request a sms code for a mobile
+ * @param nationCode nation code
  * @param mobile mobile number string
  * @param lang language code
+ * @param extra for some provider they may need extra parameters
  * @return null if ok, error message if failed
  */
-async function requestSmsCode(mobile, lang) {
+async function requestSmsCode(nationCode, mobile, lang, extra) {
 	// generate message, template string must have a %s in it
 	let code = smsUtil.generateSmsCode(serverConfig.twilio_code_length)
 	let msg = util.format(L(lang, 'twilio_tpl_register'), code)
+	let fullMobile = `${nationCode}${mobile}`
 
 	// send message, if success, save sms code in db for later verification
 	let errMsg = await client.messages.create({
-		to: mobile,
+		to: fullMobile,
 		from: serverConfig.twilio_sender,
 		body: msg
 	}).then(async message => {
 		// update code record
-		let record = await SmsCode.findOne({ mobile: mobile })
+		let record = await SmsCode.findOne({ mobile: fullMobile })
 		if(!record) {
 			record = new SmsCode({
-				mobile: mobile,
+				mobile: fullMobile,
 				code: code
 			})
 		} else {
@@ -47,9 +50,9 @@ async function requestSmsCode(mobile, lang) {
 	return errMsg
 }
 
-async function verifySmsCode(mobile, sms, lang) {
+async function verifySmsCode(nationCode, mobile, sms, lang) {
 	// manually verify code
-	let record = await SmsCode.findOne({ mobile: mobile })
+	let record = await SmsCode.findOne({ mobile: `${nationCode}${mobile}` })
 	if(record) {
 		if(record.code == sms) {
 			await record.remove()

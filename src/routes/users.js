@@ -103,7 +103,7 @@ router.post('/register_sms', async (ctx, next) => {
 		ErrCode.build(ctx, ErrCode.ERR_USER_EXISTS)
 	} else {
 		// verify sms, if return null, means ok
-		let errMsg = await smsUtil.verifySmsCode(nationCode + mobile, sms)
+		let errMsg = await smsUtil.verifySmsCode(nationCode, mobile, sms)
 		if(errMsg) {
 			ErrCode.build(ctx, ErrCode.ERR_VERIFY_SMS_FAILED, errMsg)
 		} else {
@@ -156,7 +156,7 @@ router.post('/login_sms', async (ctx, next) => {
 	let { mobile, nationCode, sms } = ctx.request.body
 
 	// verify sms, if return null, means ok
-	let errMsg = await smsUtil.verifySmsCode(nationCode + mobile, sms)
+	let errMsg = await smsUtil.verifySmsCode(nationCode, mobile, sms)
 	if(errMsg) {
 		ErrCode.build(ctx, ErrCode.ERR_VERIFY_SMS_FAILED, errMsg)
 	} else {
@@ -221,7 +221,7 @@ router.post('/request_sms', async (ctx, next) => {
 	}
 
 	// request
-	let errMsg = await smsUtil.requestSmsCode(nationCode + mobile, lang)
+	let errMsg = await smsUtil.requestSmsCode(nationCode, mobile, lang)
 	if(errMsg) {
 		ErrCode.build(ctx, ErrCode.ERR_REQUEST_SMS_FAILED, errMsg)
 	} else {
