@@ -10,6 +10,7 @@ import _ from 'lodash'
 
 let secret = null
 let jwtFreeUrls = {}
+let jwtFreePrefixes = {}
 
 /**
  * register a url so it won't be verified for jwt token
@@ -17,6 +18,34 @@ let jwtFreeUrls = {}
  */
 function registerJwtFreeUrl(url) {
 	jwtFreeUrls[url] = true
+}
+
+/**
+ * register a prefix so all url starts with that prefix will not be
+ * validated against jwt
+ */
+function registerJwtFreePrefix(prefix) {
+	jwtFreePrefixes[prefix] = true
+}
+
+function isJwtFree(ctx) {
+	// trim trailing slash
+	let url = _.trimEnd(ctx.url, '/')
+
+	// if url is registered, true
+	if(jwtFreeUrls[url]) {
+		return true
+	}
+
+	// if url starts with any registered prefix, true
+	for(let i in jwtFreePrefixes) {
+		if(url.startsWith(jwtFreePrefixes[i])) {
+			return true
+		}
+	}
+
+	// fallback
+	return false
 }
 
 /**
@@ -31,7 +60,7 @@ function checkToken() {
 	return async function(ctx, next) {
 		// if enabled jwt and url is not jwt-free, verify jwt toke
 		if(serverConfig.enable_jwt) {
-			if(!jwtFreeUrls[_.trimEnd(ctx.url, '/')]) {
+			if(!isJwtFree(ctx)) {
 				// get token
 				let token = ExtractJwt.fromAuthHeaderAsBearerToken()(ctx.request)
 				if(token == null) {
@@ -64,5 +93,6 @@ function getSecret() {
 export default {
 	checkToken,
 	getSecret,
-	registerJwtFreeUrl
+	registerJwtFreeUrl,
+	registerJwtFreePrefix
 }
