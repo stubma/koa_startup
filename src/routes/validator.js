@@ -42,11 +42,11 @@ function validateRequestParams() {
 				for(let key in schema) {
 					let param = ctx.request.body[key]
 					let validator = schema[key]
-					if(!param && !validator.optional) {
+					if(param == null && !validator.optional) {
 						valid = false
 						ErrCode.build(ctx, ErrCode.ERR_PARAM_MISSING, key)
 						break
-					} else if(param) {
+					} else if(param != null) {
 						if(validator.args) {
 							valid = validator.isValid(param, ...validator.args)
 						} else {
@@ -74,7 +74,7 @@ function validateRequestParams() {
  * validator which ensures value is a positive number
  */
 function positiveNumberValidator(value) {
-	return _.isNumber(value) && value > 0
+	return _.isNumber(value) && value >= 0
 }
 
 /**
