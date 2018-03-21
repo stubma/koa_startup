@@ -124,11 +124,35 @@ function lengthStringValidator(value, minLength, maxLength) {
 	return true
 }
 
+/**
+ * validator which ensures value is an array and you can set an element
+ * validator for every element also
+ */
+function arrayValidator(value, elementValidator) {
+	// must be array
+	if(!_.isArray(value)) {
+		return false
+	}
+
+	// element must be passed for element validator
+	if(elementValidator) {
+		for(let i in value) {
+			if(!elementValidator(value[i])) {
+				return false
+			}
+		}
+	}
+
+	// ok
+	return true
+}
+
 export default {
 	registerParamSchema,
 	validateRequestParams,
 	positiveNumberValidator,
 	rangeNumberValidator,
 	nonEmptyStringValidator,
-	lengthStringValidator
+	lengthStringValidator,
+	arrayValidator
 }
