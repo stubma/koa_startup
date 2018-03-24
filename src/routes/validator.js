@@ -98,6 +98,30 @@ function rangeNumberValidator(value, min, max) {
 }
 
 /**
+ * validator which ensures value is a non-empty json format string
+ */
+function jsonStringValidator(value) {
+	// must be string
+	if(!_.isString(value)) {
+		return false
+	}
+
+	// if parse failed, false
+	// if it is an array, false, we require the top object is not an array
+	try {
+		let j = JSON.parse(value)
+		if(j.constructor.name == 'Array') {
+			return false
+		}
+	} catch(e) {
+		return false
+	}
+
+	// finally ok
+	return true
+}
+
+/**
  * validator which ensures value is a non-empty string
  */
 function nonEmptyStringValidator(value) {
@@ -154,5 +178,6 @@ export default {
 	rangeNumberValidator,
 	nonEmptyStringValidator,
 	lengthStringValidator,
+	jsonStringValidator,
 	arrayValidator
 }
