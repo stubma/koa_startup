@@ -171,6 +171,13 @@ function arrayValidator(value, elementValidator) {
 	return true
 }
 
+/**
+ * validator which ensures value is an enum value
+ */
+function enumValidator(value, enums) {
+	return enums.indexOf(value) != -1
+}
+
 export default {
 	registerParamSchema,
 	validateRequestParams,
@@ -179,5 +186,6 @@ export default {
 	nonEmptyStringValidator,
 	lengthStringValidator,
 	jsonStringValidator,
-	arrayValidator
+	arrayValidator,
+	enumValidator
 }
