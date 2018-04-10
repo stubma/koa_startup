@@ -149,6 +149,23 @@ function lengthStringValidator(value, minLength, maxLength) {
 }
 
 /**
+ * validate a string with utf8 bytes length
+ */
+function byteLengthStringValidator(value, minLength, maxLength) {
+	if(!_.isString(value)) {
+		return false
+	}
+	let byteLength = Buffer.from(value, 'utf8').length
+	if(minLength != undefined && byteLength < minLength) {
+		return false
+	}
+	if(maxLength != undefined && byteLength > maxLength) {
+		return false
+	}
+	return true
+}
+
+/**
  * validator which ensures value is an array and you can set an element
  * validator for every element also
  */
@@ -185,6 +202,7 @@ export default {
 	rangeNumberValidator,
 	nonEmptyStringValidator,
 	lengthStringValidator,
+	byteLengthStringValidator,
 	jsonStringValidator,
 	arrayValidator,
 	enumValidator

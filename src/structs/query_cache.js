@@ -1,7 +1,7 @@
 'use strict'
 
 var LRU = require("lru-cache")
-import ecc from '../ecc'
+import ecc from '../ecc/index'
 
 // a cache of cursors
 let queryCache = LRU({
