@@ -7,7 +7,11 @@ import serverConfig from '../config/server_config'
 import ErrCode from './err_msg'
 
 // connect
-mongoose.connect(process.env.NODE_ENV === 'production' ? `mongodb://yourserverip:27017/${serverConfig.db_name}` : `mongodb://localhost:27017/${serverConfig.db_name}`)
+let profile = process.env.NODE_ENV === 'production' ? 'production' : 'default'
+let config = serverConfig.db[profile]
+mongoose.connect(config.db_user.length > 0 ?
+	`mongodb://${config.db_user}:${config.db_pwd}@${config.db_ip}:${config.db_port}/${config.db_name}` :
+	`mongodb://${config.db_ip}:${config.db_port}/${config.db_name}`)
 
 module.exports = {
 	ErrCode: ErrCode,
