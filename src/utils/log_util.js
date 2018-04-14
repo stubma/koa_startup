@@ -2,6 +2,7 @@
 
 import log4js from 'log4js'
 import logConfig from '../config/log_config'
+import fs from 'fs'
 
 // load config
 log4js.configure(logConfig);
@@ -11,6 +12,27 @@ const logger = log4js.getLogger()
 const errLogger = log4js.getLogger('error')
 
 class LogUtil {
+	// create logs path
+	static _confirmPath(pathStr) {
+		if(!fs.existsSync(pathStr)) {
+			fs.mkdirSync(pathStr)
+		}
+	}
+
+	/**
+	 * init log util
+	 */
+	static init() {
+		if(logConfig.baseLogPath) {
+			this._confirmPath(logConfig.baseLogPath)
+			for(var i = 0, len = logConfig.appenders.length; i < len; i++) {
+				if(logConfig.appenders[i].path) {
+					this._confirmPath(logConfig.baseLogPath + logConfig.appenders[i].path)
+				}
+			}
+		}
+	}
+
 	static formatResp(ctx, resTime) {
 		let logText = new String()
 

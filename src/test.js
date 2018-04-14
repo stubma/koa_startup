@@ -1,20 +1,19 @@
 'use strict';
 
-var ws = require('engine.io-client')('ws://192.168.1.102:3000/');
+var ws = require('socket.io-client')('wss://localhost:3000')
 
-ws.on('open', function open() {
+ws.on('connect', function open() {
 	console.log("open")
 	ws.send(JSON.stringify({
 		_method: 'POST',
-		_url: '/users/register_pwd',
+		_url: '/user/login_pwd',
 		_headers: {
-			'content-type' : 'application/json',
-			'authorization': 'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtb2JpbGUiOiIxMzM0NDU1NjY3NyIsInBhc3N3b3JkIjoid1orb0FIZUZVQjU5SDB0Vnd5bWsyZVBHYUFiRnYyckpJUEdFZDJ0cllwQT0iLCJpYXQiOjE1MTc5ODg2MTcsImV4cCI6MTUxODE2MTQxNywiaXNzIjoieHh4Iiwic3ViIjoieHh4In0.Yi_cbpbzV4NiRdq1YsPidt2DnmA2Fj01iyapKerVXlo'
+			'content-type' : 'application/json'
 		},
 		mobile: "13344556677",
 		nationCode: "+86",
 		lang: "zh-CN",
-		password: "my-passwddord"
+		password: "111111"
 	}))
 });
 
@@ -23,7 +22,7 @@ ws.on('message', d => {
 	console.log("receive data: " + d)
 });
 
-ws.on('close', function close() {
+ws.on('disconnect', function close() {
 	console.log('disconnected');
 });
 

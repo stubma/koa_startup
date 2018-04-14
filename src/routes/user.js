@@ -8,7 +8,7 @@ import _ from 'lodash'
 import smsUtil from '../utils/sms_util'
 
 // create router
-const prefix = '/users'
+const prefix = '/user'
 const router = require('koa-router')({
 	prefix: prefix
 })

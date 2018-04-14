@@ -1,20 +1,19 @@
 'use strict'
 
-import http from 'http'
 const debug = require('debug')('koa:websocketserver')
 const co = require('co')
 import compose from 'koa-compose'
 import { ErrCode } from '../models'
 
 class KoaWebSocketServer {
-	constructor(app) {
+	constructor(app, server) {
 		// Create HTTP server
 		this.app = app
 		this.middleware = []
-		this.server = http.createServer(app.callback())
+		this.server = server
 
 		// websocket server
-		let io = require('engine.io')(this.server)
+		let io = require('socket.io')(this.server)
 
 		// handle websocket connection
 		io.on('connection', ws => {

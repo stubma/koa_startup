@@ -6,58 +6,26 @@ import json from 'koa-json'
 import onerror from 'koa-onerror'
 import bodyparser from 'koa-bodyparser'
 import logger from 'koa-logger'
+import serve from 'koa-static'
 import auth from './routes/auth'
-import users from './routes/users'
+import user from './routes/user'
 import validator from './routes/validator'
 import LogUtil from './utils/log_util'
 import enforceHttps from 'koa-sslify'
 import http from 'http'
 import https from 'https'
-import fs from 'fs'
-import logConfig from './config/log_config'
 import KoaWebSocketServer from './ws/koa_ws'
 import serverConfig from './config/server_config'
+import greenlock from 'greenlock-express'
+import fs from 'fs'
+import path from 'path'
 
 // create koa
 const Koa = require('koa')
 const app = new Koa()
 
-/**
- * Normalize a port into a number, string, or false.
- */
-function normalizePort(val) {
-	var port = parseInt(val, 10)
-
-	if(isNaN(port)) {
-		// named pipe
-		return val
-	}
-
-	if(port >= 0) {
-		// port number
-		return port
-	}
-
-	return false
-}
-
-// create logs path
-function confirmPath(pathStr) {
-	if(!fs.existsSync(pathStr)) {
-		fs.mkdirSync(pathStr)
-	}
-}
-function initLogPath() {
-	if(logConfig.baseLogPath) {
-		confirmPath(logConfig.baseLogPath)
-		for(var i = 0, len = logConfig.appenders.length; i < len; i++) {
-			if(logConfig.appenders[i].path) {
-				confirmPath(logConfig.baseLogPath + logConfig.appenders[i].path)
-			}
-		}
-	}
-}
-initLogPath()
+// init log
+LogUtil.init()
 
 // error handler
 onerror(app, {
@@ -73,7 +41,9 @@ onerror(app, {
 })
 
 // Force HTTPS on all page
-// app.use(enforceHttps())
+if(serverConfig.https.enable && !serverConfig.https.use_le) {
+	app.use(enforceHttps())
+}
 
 // middlewares
 app.use(bodyparser({
@@ -81,6 +51,7 @@ app.use(bodyparser({
 }))
 app.use(json())
 app.use(logger())
+app.use(serve('static'))
 
 // logger
 app.use(async (ctx, next) => {
@@ -111,37 +82,105 @@ if(!serverConfig.enable_cors) {
 	})
 }
 
+// avatar should be free of jwt auth
+auth.registerJwtFreePrefix('/avatar/')
+
 // routes
 app.use(auth.checkToken())
 app.use(validator.validateRequestParams())
-app.use(users.routes(), users.allowedMethods())
+app.use(user.routes(), user.allowedMethods())
 
 // error-handling
 app.on('error', (err, ctx) => {
 	// log error
 	LogUtil.logError(ctx, err)
-});
+})
 
-// SSL options
-// var options = {
-// 	key: fs.readFileSync('./ssl/server.key'),
-// 	cert: fs.readFileSync('./ssl/server.pem')
-// };
-
-// Get port from environment and store in Express.
-var port = normalizePort(process.env.PORT || '3000')
-
-// create http and websocket server
-// you can disable websocket server in server_config.json
+// create server, based on https config, we create secure server or normal server
 let server = null
-if(serverConfig.enable_websocket) {
-	server = new KoaWebSocketServer(app)
-	server.use(auth.checkToken())
-	server.use(validator.validateRequestParams())
-	server.use(users.routes())
+if(serverConfig.https.enable) {
+	// if we use letsencrypt, install letsencrypt middleware
+	// if not, use static server key & certificate
+	if(serverConfig.https.use_le) {
+		// create challenger
+		let leHttpChallenge = require('le-challenge-fs').create({
+			webrootPath: '~/letsencrypt/var/',
+			debug: true
+		})
+		let leSniChallenge = require('le-challenge-sni').create({
+			debug: true
+		})
+		leSniChallenge.loopback = 'XXXX' // to avoid error, workaround loopback checking
+		leSniChallenge.test = 'XXXXX' // to avoid error, workaround test checking
+
+		// create LE handler
+		let le = greenlock.create({
+			server: 'staging', // in production use 'https://acme-v01.api.letsencrypt.org/directory'
+			configDir: '~/letsencrypt/etc',
+			approveDomains: function (opts, certs, cb) {
+				console.log(`+++++++++ opts is ${JSON.stringify(opts)}, certs is ${JSON.stringify(certs)} +++++++++++`)
+				opts.domains = certs && certs.altnames || opts.domains;
+				opts.email = 'stubma@163.com'
+				opts.agreeTos = true;
+				cb(null, { options: opts, certs: certs });
+			},
+			challenges: {
+				'http-01': leHttpChallenge,
+				'tls-sni-01': leSniChallenge,
+				'tls-sni-02': leSniChallenge
+			},
+			challengeType: 'http-01',
+			debug: true
+		})
+
+		// create https server
+		server = https.createServer(le.httpsOptions, le.middleware(app.callback()))
+	} else {
+		// SSL options, resolve key/cert file path
+		let absolutePath = serverConfig.https.server_key_file.startsWith('/')
+		let keyPath = absolutePath ?
+			serverConfig.https.server_key_file :
+			path.resolve(__dirname, serverConfig.https.server_key_file)
+		absolutePath = serverConfig.https.server_cert_file.startsWith('/')
+		let certPath = absolutePath ?
+			serverConfig.https.server_cert_file :
+			path.resolve(__dirname, serverConfig.https.server_cert_file)
+		absolutePath = serverConfig.https.server_ca_file.startsWith('/')
+		let caPath = absolutePath ?
+			serverConfig.https.server_ca_file :
+			path.resolve(__dirname, serverConfig.https.server_ca_file)
+		var options = {
+			key: fs.readFileSync(keyPath),
+			cert: fs.readFileSync(certPath),
+			ca: fs.readFileSync(caPath)
+		}
+
+		// create https server
+		server = https.createServer(options, app.callback())
+	}
 } else {
 	server = http.createServer(app.callback())
 }
 
-// Listen on provided port, on all network interfaces.
-server.listen(port)
+// if websocket is enabled, wrap http server with a websocket server
+if(serverConfig.enable_websocket) {
+	server = new KoaWebSocketServer(app, server)
+	server.use(auth.checkToken())
+	server.use(validator.validateRequestParams())
+	server.use(user.routes())
+}
+
+// start listen, if https, use 443. if not, use custom port
+if(serverConfig.https.enable) {
+	if(serverConfig.https.use_le) {
+		server.listen(443)
+	} else {
+		server.listen(Number(serverConfig.https.server_port || '443'))
+	}
+} else {
+	// Get port from environment
+	let port = Number(process.env.PORT || '3000')
+
+	// listen on custom port
+	server.listen(port)
+}
