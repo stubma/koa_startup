@@ -23,10 +23,12 @@ class KoaWebSocketServer {
 			// handle client message
 			ws.on('message', message => {
 				// parse message to json object
-				let j = null
-				try {
-					j = JSON.parse(message)
-				} catch(e) {
+				let j = message
+				if(typeof(j) == 'string') {
+					try {
+						j = JSON.parse(message)
+					} catch(e) {
+					}
 				}
 
 				// we required _method, _url and _headers
