@@ -3,9 +3,8 @@ import jwt from 'jsonwebtoken'
 import auth from './auth'
 import validator from './validator'
 import { User, ErrCode } from '../models'
-import jwtConfig from '../config/jwt_config'
-import _ from 'lodash'
 import smsUtil from '../utils/sms_util'
+import serverConfig from '../config/server_config'
 
 // create router
 const prefix = '/user'
@@ -140,7 +139,7 @@ router.post('/login_pwd', async (ctx, next) => {
 				mobile: mobile,
 				nationCode: nationCode,
 				timestamp: Date.now()
-			}, auth.getSecret(), jwtConfig)
+			}, auth.getSecret(), serverConfig.jwt.options)
 		} else {
 			ErrCode.build(ctx, ErrCode.ERR_PASSWORD_WRONG)
 		}
@@ -181,7 +180,7 @@ router.post('/login_sms', async (ctx, next) => {
 			mobile: mobile,
 			nationCode: nationCode,
 			timestamp: Date.now()
-		}, auth.getSecret(), jwtConfig)
+		}, auth.getSecret(), serverConfig.jwt.options)
 	}
 })
 
@@ -203,7 +202,7 @@ router.post('/login_jwt', async (ctx, next) => {
 			mobile: mobile,
 			nationCode: nationCode,
 			timestamp: Date.now()
-		}, auth.getSecret(), jwtConfig)
+		}, auth.getSecret(), serverConfig.jwt.options)
 	} else {
 		ErrCode.build(ctx, ErrCode.ERR_USER_NOT_EXIST)
 	}

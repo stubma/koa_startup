@@ -16,8 +16,17 @@
         }
     },
     "enable_websocket": true,
-    "enable_jwt": true,
     "enable_cors": true,
+
+    "__comment__": "JSON web token authentication config",
+    "jwt": {
+        "enable": true,
+        "options": {
+            "issuer": "luma",
+            "subject": "koa_startup",
+            "expiresIn": "2 days"
+        }
+    },
 
     "__comment__": "https configuration, use_le means use letsencrypt to auto get certificate",
     "https": {

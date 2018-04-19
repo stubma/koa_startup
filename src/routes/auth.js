@@ -4,7 +4,6 @@ import ecc from '../ecc'
 import { ExtractJwt } from 'passport-jwt'
 import jwt from 'jsonwebtoken'
 import { ErrCode } from '../models'
-import jwtConfig from '../config/jwt_config'
 import serverConfig from '../config/server_config'
 import _ from 'lodash'
 
@@ -59,7 +58,7 @@ function checkToken() {
 
 	return async function(ctx, next) {
 		// if enabled jwt and url is not jwt-free, verify jwt toke
-		if(serverConfig.enable_jwt) {
+		if(serverConfig.jwt.enable) {
 			if(!isJwtFree(ctx)) {
 				// get token
 				let token = ExtractJwt.fromAuthHeaderAsBearerToken()(ctx.request)
@@ -69,7 +68,7 @@ function checkToken() {
 					// verify jwt token
 					// if failed, return error
 					// if ok, forward request
-					await jwt.verify(token, secret, jwtConfig, async (error, payload) => {
+					await jwt.verify(token, secret, serverConfig.jwt.options, async (error, payload) => {
 						if(error) {
 							ErrCode.build(ctx, ErrCode.ERR_INVALID_JWT_TOKEN)
 						} else {
