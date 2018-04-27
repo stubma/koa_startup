@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken'
 import { ErrCode } from '../models'
 import serverConfig from '../config/server_config'
 import _ from 'lodash'
+import JwtPayloadCache from '../structs/jwt_payload_cache'
 
 let secret = null
 let jwtFreeUrls = {}
@@ -57,31 +58,41 @@ function checkToken() {
 	})
 
 	return async function(ctx, next) {
-		// if enabled jwt and url is not jwt-free, verify jwt toke
-		if(serverConfig.jwt.enable) {
-			if(!isJwtFree(ctx)) {
-				// get token
-				let token = ExtractJwt.fromAuthHeaderAsBearerToken()(ctx.request)
-				if(token == null) {
-					ErrCode.build(ctx, ErrCode.ERR_NO_JWT_TOKEN)
-				} else {
-					// verify jwt token
-					// if failed, return error
-					// if ok, forward request
-					await jwt.verify(token, secret, serverConfig.jwt.options, async (error, payload) => {
-						if(error) {
-							ErrCode.build(ctx, ErrCode.ERR_INVALID_JWT_TOKEN)
-						} else {
-							await next()
-						}
-					})
-				}
-			} else {
-				await next()
-			}
-		} else {
-			await next()
+		// if jwt is not enabled, skip
+		if(!serverConfig.jwt.enable) {
+			return next()
 		}
+
+		// if url is jwt free, skip
+		if(isJwtFree(ctx)) {
+			return next()
+		}
+
+		// now jwt is required, check token
+		let token = ExtractJwt.fromAuthHeaderAsBearerToken()(ctx.request)
+		if(token == null) {
+			ErrCode.build(ctx, ErrCode.ERR_NO_JWT_TOKEN)
+			return
+		}
+
+		// verify jwt token
+		await jwt.verify(token, secret, serverConfig.jwt.options, async (error, payload) => {
+			// if has error, failed
+			if(error) {
+				ErrCode.build(ctx, ErrCode.ERR_INVALID_JWT_TOKEN)
+				return
+			}
+
+			// check payload, if timestamp is not same, then user must sign in from other device
+			let cachedPayload = JwtPayloadCache.get(payload.userId)
+			if(cachedPayload.timestamp != payload.timestamp) {
+				ErrCode.build(ctx, ErrCode.ERR_INVALID_JWT_TOKEN)
+				return
+			}
+
+			// passed
+			return next()
+		})
 	}
 }
 

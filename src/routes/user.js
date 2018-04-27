@@ -5,6 +5,7 @@ import validator from './validator'
 import { User, ErrCode } from '../models'
 import smsUtil from '../utils/sms_util'
 import serverConfig from '../config/server_config'
+import JwtPayloadCache from '../structs/jwt_payload_cache'
 
 // create router
 const prefix = '/user'
@@ -134,12 +135,16 @@ router.post('/login_pwd', async (ctx, next) => {
 	if(user) {
 		let pwd = ecc.sha256(password, 'base64')
 		if(pwd == user.password) {
-			ErrCode.build(ctx, ErrCode.ERR_OK)
-			ctx.response.body.token = jwt.sign({
-				mobile: mobile,
-				nationCode: nationCode,
+			// cache jwt payload
+			let payload = {
+				userId: user._id.toString(),
 				timestamp: Date.now()
-			}, auth.getSecret(), serverConfig.jwt.options)
+			}
+			JwtPayloadCache.set(user._id.toString(), payload)
+
+			// ok
+			ErrCode.build(ctx, ErrCode.ERR_OK)
+			ctx.response.body.token = jwt.sign(payload, auth.getSecret(), serverConfig.jwt.options)
 		} else {
 			ErrCode.build(ctx, ErrCode.ERR_PASSWORD_WRONG)
 		}
@@ -173,14 +178,17 @@ router.post('/login_sms', async (ctx, next) => {
 			await user.save()
 		}
 
+		// cache jwt payload
+		let payload = {
+			userId: user._id.toString(),
+			timestamp: Date.now()
+		}
+		JwtPayloadCache.set(user._id.toString(), payload)
+
 		// return token
 		ErrCode.build(ctx, ErrCode.ERR_OK)
 		ctx.response.body.name = user.name
-		ctx.response.body.token = await jwt.sign({
-			mobile: mobile,
-			nationCode: nationCode,
-			timestamp: Date.now()
-		}, auth.getSecret(), serverConfig.jwt.options)
+		ctx.response.body.token = await jwt.sign(payload, auth.getSecret(), serverConfig.jwt.options)
 	}
 })
 
@@ -197,12 +205,16 @@ router.post('/login_jwt', async (ctx, next) => {
 		nationCode: nationCode
 	})
 	if(user) {
-		ErrCode.build(ctx, ErrCode.ERR_OK)
-		ctx.response.body.token = await jwt.sign({
-			mobile: mobile,
-			nationCode: nationCode,
+		// cache jwt payload
+		let payload = {
+			userId: user._id.toString(),
 			timestamp: Date.now()
-		}, auth.getSecret(), serverConfig.jwt.options)
+		}
+		JwtPayloadCache.set(user._id.toString(), payload)
+
+		// ok
+		ErrCode.build(ctx, ErrCode.ERR_OK)
+		ctx.response.body.token = await jwt.sign(payload, auth.getSecret(), serverConfig.jwt.options)
 	} else {
 		ErrCode.build(ctx, ErrCode.ERR_USER_NOT_EXIST)
 	}
