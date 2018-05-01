@@ -40,6 +40,16 @@
         "server_port": 3000
     },
 
+    "__comment__": "ip filter settings",
+    "ip_filter": {
+        "enable": false,
+        "default_schema": {
+            "whitelist": [
+                "::1", "127.0.0.1"
+            ]
+        }
+    },
+
     "__comment__": "sms_provider can be twilio/leancloud/sms.cn",
     "sms_provider": "twilio",
 

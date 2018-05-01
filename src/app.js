@@ -10,6 +10,7 @@ import serve from 'koa-static'
 import auth from './routes/auth'
 import user from './routes/user'
 import validator from './routes/validator'
+import ipFilter from './routes/ip_filter'
 import LogUtil from './utils/log_util'
 import enforceHttps from 'koa-sslify'
 import http from 'http'
@@ -86,6 +87,7 @@ if(!serverConfig.enable_cors) {
 auth.registerJwtFreePrefix('/avatar/')
 
 // routes
+app.use(ipFilter.validateIp())
 app.use(auth.checkToken())
 app.use(validator.validateRequestParams())
 app.use(user.routes(), user.allowedMethods())
@@ -165,6 +167,7 @@ if(serverConfig.https.enable) {
 // if websocket is enabled, wrap http server with a websocket server
 if(serverConfig.enable_websocket) {
 	server = new KoaWebSocketServer(app, server)
+	server.use(ipFilter.validateIp())
 	server.use(auth.checkToken())
 	server.use(validator.validateRequestParams())
 	server.use(user.routes())
