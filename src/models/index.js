@@ -7,8 +7,7 @@ import serverConfig from '../config/server_config'
 import ErrCode from './err_msg'
 
 // connect
-let profile = process.env.NODE_ENV === 'production' ? 'production' : 'default'
-let config = serverConfig.db[profile]
+let config = serverConfig.db[process.env.NODE_ENV] || serverConfig.db['default']
 mongoose.connect(config.db_user.length > 0 ?
 	`mongodb://${config.db_user}:${config.db_pwd}@${config.db_ip}:${config.db_port}/${config.db_name}` :
 	`mongodb://${config.db_ip}:${config.db_port}/${config.db_name}`)
