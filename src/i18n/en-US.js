@@ -13,6 +13,7 @@ const en_US = {
 	err_param_not_valid: 'parameter "%s" is not valid',
 	err_request_sms_failed: 'Failed to request sms code: %s',
 	err_verify_sms_failed: 'Failed to verify sms code: %s',
+	err_permission_not_granted: 'No permission to access',
 
 	// app name
 	app_name: 'Koa Startup',

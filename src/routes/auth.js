@@ -11,6 +11,8 @@ import JwtPayloadCache from '../structs/jwt_payload_cache'
 let secret = null
 let jwtFreeUrls = {}
 let jwtFreePrefixes = {}
+let urlPermissions = {} // key is url, value is permission name
+let prefixPermissions = {} // key is prefix, value is permission name
 
 /**
  * register a url so it won't be verified for jwt token
@@ -26,6 +28,20 @@ function registerJwtFreeUrl(url) {
  */
 function registerJwtFreePrefix(prefix) {
 	jwtFreePrefixes[prefix] = true
+}
+
+/**
+ * register a url permission so a user which has such permission can access it
+ */
+function registerUrlPermission(url, perm) {
+	urlPermissions[url] = perm
+}
+
+/**
+ * register permission for a prefix so any url starts with this prefix require such permission
+ */
+function registerPrefixPermission(prefix, perm) {
+	prefixPermissions[prefix] = perm
 }
 
 function isJwtFree(ctx) {
@@ -90,6 +106,26 @@ function checkToken() {
 				return
 			}
 
+			// if url has permission requirement, check permission in payload
+			let url = _.trimEnd(ctx.url, '/')
+			let requiredPermission = urlPermissions[url]
+			if(requiredPermission && requiredPermission != payload.permission) {
+				ErrCode.build(ctx, ErrCode.ERR_PERMISSION_NOT_GRANTED)
+				return
+			}
+
+			// if prefix has permission requirement, check permission
+			for(let prefix in prefixPermissions) {
+				if(url.startsWith(prefix)) {
+					requiredPermission = prefixPermissions[prefix]
+					if(requiredPermission != payload.permission) {
+						ErrCode.build(ctx, ErrCode.ERR_PERMISSION_NOT_GRANTED)
+						return
+					}
+					break
+				}
+			}
+
 			// passed
 			return next()
 		})
@@ -104,5 +140,7 @@ export default {
 	checkToken,
 	getSecret,
 	registerJwtFreeUrl,
-	registerJwtFreePrefix
+	registerJwtFreePrefix,
+	registerUrlPermission,
+	registerPrefixPermission
 }

@@ -34,7 +34,7 @@ class QueryCache {
 		if(cursor == undefined) {
 			cursor = model.find(selector ? selector : {})
 			if(sort) {
-				cursor.sort(sort)
+				cursor.sort(sort).collation({ locale: 'zh' })
 			}
 			queryCache.set(key, cursor)
 

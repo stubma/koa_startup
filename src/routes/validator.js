@@ -61,10 +61,10 @@ function validateRequestParams() {
 
 				// if valid, forward
 				if(valid) {
-					await next()
+					return next()
 				}
 			} else {
-				await next()
+				return next()
 			}
 		}
 	}
@@ -94,30 +94,6 @@ function rangeNumberValidator(value, min, max) {
 	if(max != undefined && value > max) {
 		return false
 	}
-	return true
-}
-
-/**
- * validator which ensures value is a non-empty json format string
- */
-function jsonStringValidator(value) {
-	// must be string
-	if(!_.isString(value)) {
-		return false
-	}
-
-	// if parse failed, false
-	// if it is an array, false, we require the top object is not an array
-	try {
-		let j = JSON.parse(value)
-		if(j.constructor.name == 'Array') {
-			return false
-		}
-	} catch(e) {
-		return false
-	}
-
-	// finally ok
 	return true
 }
 
@@ -201,9 +177,8 @@ export default {
 	positiveNumberValidator,
 	rangeNumberValidator,
 	nonEmptyStringValidator,
-	lengthStringValidator,
 	byteLengthStringValidator,
-	jsonStringValidator,
+	lengthStringValidator,
 	arrayValidator,
 	enumValidator
 }

@@ -19,7 +19,8 @@ const codes = {
 	ERR_PARAM_NOT_VALID: [10, 'err_param_not_valid', true],
 	ERR_REQUEST_SMS_FAILED: [11, 'err_request_sms_failed', true],
 	ERR_VERIFY_SMS_FAILED: [12, 'err_verify_sms_failed', true],
-	ERR_ACCESS_NOT_ALLOWED: [13, 'err_access_not_allowed', false]
+	ERR_ACCESS_NOT_ALLOWED: [13, 'err_access_not_allowed', false],
+	ERR_PERMISSION_NOT_GRANTED: [14, 'err_permission_not_granted', false]
 }
 
 // class ErrCode

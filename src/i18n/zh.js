@@ -13,6 +13,7 @@ const zh_CN = {
 	err_param_not_valid: '参数"%s"格式错误',
 	err_request_sms_failed: '请求验证码失败: %s',
 	err_verify_sms_failed: '验证码校验失败: %s',
+	err_permission_not_granted: '没有访问权限',
 
 	// app name
 	app_name: 'Koa Startup',
