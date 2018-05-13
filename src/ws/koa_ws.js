@@ -1,5 +1,6 @@
 'use strict'
 
+import WSSubscriber from './ws_subscriber'
 const debug = require('debug')('koa:websocketserver')
 const co = require('co')
 import compose from 'koa-compose'
@@ -17,8 +18,16 @@ class KoaWebSocketServer {
 
 		// handle websocket connection
 		io.on('connection', ws => {
+			// set a custom flag into ws
+			ws.connected = true
+
 			// create route chain
 			const fn = co.wrap(compose(this.middleware))
+
+			// handle disconnect
+			ws.on('disconnect', function() {
+				ws.connected = false
+			})
 
 			// handle client message
 			ws.on('message', message => {
@@ -56,7 +65,8 @@ class KoaWebSocketServer {
 					url: j._url,
 					method: j._method,
 					socket: ws.request.connection,
-					headers: j._headers
+					headers: j._headers,
+					ws: ws
 				}, res)
 				let url = j._url
 				let method = j._method
@@ -87,6 +97,9 @@ class KoaWebSocketServer {
 		// setup event
 		this.server.on('error', this.onError.bind(this))
 		this.server.on('listening', this.onListening.bind(this))
+
+		// install subscriber
+		WSSubscriber.instance.install(this)
 	}
 
 	listen(port) {
@@ -94,8 +107,8 @@ class KoaWebSocketServer {
 	}
 
 	use(fn) {
-		this.middleware.push(fn);
-		return this;
+		this.middleware.push(fn)
+		return this
 	}
 
 	/**
