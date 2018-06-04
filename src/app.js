@@ -55,18 +55,7 @@ app.use(logger())
 app.use(serve('static'))
 
 // logger
-app.use(async (ctx, next) => {
-	// handle request and record time consumed
-	const start = Date.now()
-	await next()
-	const ms = Date.now() - start
-
-	// log response
-	LogUtil.logResponse(ctx, ms);
-
-	// output time
-	console.log(`${ctx.method} ${ctx.url} - ${ms}ms`)
-})
+app.use(LogUtil.logHandler())
 
 // to enable CORS
 if(!serverConfig.enable_cors) {
@@ -78,7 +67,7 @@ if(!serverConfig.enable_cors) {
 		if(ctx.method == 'OPTIONS') {
 			ctx.response.status = 200
 		} else {
-			await next()
+			return next()
 		}
 	})
 }
@@ -167,6 +156,7 @@ if(serverConfig.https.enable) {
 // if websocket is enabled, wrap http server with a websocket server
 if(serverConfig.enable_websocket) {
 	server = new KoaWebSocketServer(app, server)
+	server.use(LogUtil.logHandler())
 	server.use(ipFilter.validateIp())
 	server.use(auth.checkToken())
 	server.use(validator.validateRequestParams())

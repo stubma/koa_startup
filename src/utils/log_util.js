@@ -115,6 +115,24 @@ class LogUtil {
 			logger.info(this.formatResp(ctx, resTime));
 		}
 	}
+
+	/**
+	 * log handler for koa
+	 */
+	static logHandler() {
+		return async function(ctx, next) {
+			// handle request and record time consumed
+			const start = Date.now()
+			await next()
+			const ms = Date.now() - start
+
+			// log response
+			LogUtil.logResponse(ctx, ms)
+
+			// output time
+			console.log(`${ctx.method} ${ctx.url} - ${ms}ms`)
+		}
+	}
 }
 
 export default LogUtil
