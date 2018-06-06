@@ -2,6 +2,7 @@
 
 import validator from '../routes/validator'
 import ErrCode from '../models/err_msg'
+import ecc from '../ecc'
 
 // singleton
 let instance = null
@@ -29,18 +30,29 @@ class WSSubscriber {
 	}
 
 	pushEvent(event, data, completed = false) {
+		// build data hash
+		let dataStr = typeof(data) == 'string' ? data : JSON.stringify(data)
+		let hash = ecc.sha256(dataStr)
+
+		// check registered client
 		for(let cid in this.subscriptionMap) {
 			let sub = this.subscriptionMap[cid]
 			if(sub[event]) {
 				let ws = sub[event]
 				if(ws.connected) {
-					ws.send(JSON.stringify({
-						_url: '/event',
-						_method: 'POST',
-						data: data,
-						event: event,
-						completed: completed
-					}))
+					// if websocket is connected, check last push hash
+					let hashKey = `__${event}_hash`
+					let lastHash = ws[hashKey]
+					if(hash != lastHash) {
+						ws.send(JSON.stringify({
+							_url: '/event',
+							_method: 'POST',
+							data: data,
+							event: event,
+							completed: completed
+						}))
+						ws[hashKey] = hash
+					}
 				} else {
 					// if websocket is disconnected, remove it from subscription map
 					delete sub[event]
