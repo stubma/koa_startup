@@ -114,6 +114,9 @@ class WSSubscriber {
 
 		// ok
 		ErrCode.build(ctx, ErrCode.ERR_OK)
+		Object.assign(ctx.response.body, {
+			event: event
+		})
 	}
 
 	async on_unsubscribe_event(ctx, next) {
@@ -127,6 +130,9 @@ class WSSubscriber {
 
 		// ok
 		ErrCode.build(ctx, ErrCode.ERR_OK)
+		Object.assign(ctx.response.body, {
+			event: event
+		})
 	}
 }
 
