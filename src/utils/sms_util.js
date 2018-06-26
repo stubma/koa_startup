@@ -4,6 +4,7 @@ import serverConfig from '../config/server_config'
 import leancloud from './leancloud_provider'
 import twilio from './twilio_provider'
 import smscn from './smscn_provider'
+import aliyun from './aliyun_provider'
 import L from '../i18n'
 
 /**
@@ -21,6 +22,8 @@ async function requestSmsCode(nationCode, mobile, lang, extra) {
 		return await twilio.requestSmsCode(nationCode, mobile, lang, extra)
 	} else if(serverConfig.sms_provider == 'sms.cn') {
 		return await smscn.requestSmsCode(nationCode, mobile, lang, extra)
+	} else if(serverConfig.sms_provider == 'aliyun') {
+		return await aliyun.requestSmsCode(nationCode, mobile, lang, extra)
 	} else {
 		return L(lang, 'sms_provider_not_supported')
 	}
@@ -41,6 +44,8 @@ async function verifySmsCode(nationCode, mobile, sms, lang) {
 		return await twilio.verifySmsCode(nationCode, mobile, sms, lang)
 	} else if(serverConfig.sms_provider == 'sms.cn') {
 		return await smscn.verifySmsCode(nationCode, mobile, sms, lang)
+	} else if(serverConfig.sms_provider == 'aliyun') {
+		return await aliyun.verifySmsCode(nationCode, mobile, sms, lang)
 	} else {
 		return L(lang, 'sms_provider_not_supported')
 	}

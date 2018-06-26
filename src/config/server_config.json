@@ -50,8 +50,20 @@
         }
     },
 
-    "__comment__": "sms_provider can be twilio/leancloud/sms.cn",
+    "__comment__": "sms_provider can be twilio/leancloud/sms.cn/aliyun",
     "sms_provider": "twilio",
+
+    "aliyun_access_key_id": "填入你的access key id",
+    "aliyun_access_key_secret": "填入你的access key secret",
+    "aliyun_sign_name": {
+        "en": "填入你的签名名称",
+        "zh": "填入你的签名名称"
+    },
+    "aliyun_template": {
+        "en": "填入你的模板id",
+        "zh": "填入你的模板id"
+    },
+    "aliyun_code_length": 6,
 
     "twilio_account_sid": "AC01d19cc7e4762da7a0a8361cdab9c26a",
     "twilio_auth_token": "ea6eba8da2643f1df7b2792fc5e890a3",
