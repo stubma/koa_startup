@@ -56,6 +56,8 @@ function validateRequestParams() {
 							ErrCode.build(ctx, ErrCode.ERR_PARAM_NOT_VALID, key)
 							break
 						}
+					} else if(validator.optional) {
+						ctx.request.body[key] = validator.default
 					}
 				}
 
