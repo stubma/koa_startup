@@ -54,8 +54,8 @@ function isJwtFree(ctx) {
 	}
 
 	// if url starts with any registered prefix, true
-	for(let i in jwtFreePrefixes) {
-		if(url.startsWith(jwtFreePrefixes[i])) {
+	for(let prefix in jwtFreePrefixes) {
+		if(url.startsWith(prefix)) {
 			return true
 		}
 	}
